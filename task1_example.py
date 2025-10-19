@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-'''
+"""
 Пример практической работы 1: регрессия средствами scikit-learn
 
-Задание: 
+Задание:
 A. Сгенерировать выборку данных, состоящую из элементов (трёхмерных точек) вида
     (x, 0.1 x + y, x^3 + y^3 + epsilon),
 где x --- случайное число, равномерно распределённое в диапазоне [-1, 1),
@@ -18,12 +18,12 @@ epsilon --- случайное число, нормально распредел
     (сочетанием регуляризаций ридж-регрессии и лассо-регрессии)
     средствами библиотеки scikit-learn
 
-Г. Вывести выборку и предсказания на один график 
+Г. Вывести выборку и предсказания на один график
    для визуальной оценки результатов
 
 Д. Оценить ошибку данного метода
 
-'''
+"""
 
 # импортируем используемые библиотеки:
 import numpy  # базовая библиотека для численных методов
@@ -37,22 +37,22 @@ from mpl_toolkits.mplot3d import axes3d, Axes3D  # дополнительные 
 
 def generate_samples(NumSamples = 100):
     ''' функция генерации требуемой выборки;
-    NumSamples --- её размер ''' 
+    NumSamples --- её размер '''
     # создаём матрицу случайных действительных чисел для первого параметра (x)
-    # размером (NumSamples строк x 1 столбец), 
+    # размером (NumSamples строк x 1 столбец),
     # равномерно распределённых в диапазоне [-1, 1):
     # https://numpy.org/doc/stable/reference/random/generated/numpy.random.uniform.html
     v1 = numpy.random.uniform(low=-1, high=1, size=(NumSamples, 1))
     # создаём матрицу того же размера для второго параметра:
     # https://numpy.org/doc/stable/reference/random/generated/numpy.random.normal.html
-    v2 = v1 + numpy.random.normal(loc=0.2, scale=1.3, size=(NumSamples, 1))
+    v2 = v1 + numpy.random.normal(loc=0.2, scale=1.3, size=(NumSamples, 1)) # ВОПРОС
     # создаём матрицу того же размера для правильного ответа:
     epsilon = numpy.random.normal(loc=0, scale=0.1, size=(NumSamples, 1))
     res = numpy.power(v1, 3) + numpy.power(v2, 3) + epsilon
-    # комбинируем первый и второй столбцы в одну матрицу, чтобы 
+    # комбинируем первый и второй столбцы в одну матрицу, чтобы
     # в каждой её строке были все независимые переменные
     v = numpy.concatenate((v1, v2), axis=1)
-    return (v, res)
+    return (v, res.ravel())
 
 # Б. Функция для вывода выборки
 def draw_samples(v, res):
@@ -88,7 +88,7 @@ def calculate_regression_by_standard_method(v, res):
     model.fit(v, res)
     # получаем предсказания для выборки в виде вектора
     # того же формата, что и res
-    prediction = model.predict(v)
+    prediction = model.predict(v) # ВОПРОС
     # возвращаем предсказания
     return prediction
 
@@ -130,11 +130,13 @@ v, res = generate_samples(100)
 # выводим её для визуальной оценки
 draw_samples(v, res)
 
+print(res)
 # обучаем модель
 prediction = calculate_regression_by_standard_method(v, res)
 
 # выводим предсказания
 draw_samples(v, prediction)
+print(prediction)
 
 # выводим одновременно предсказания и исходные данные
 draw_samples_and_prediction(v, res, prediction)
@@ -142,3 +144,4 @@ draw_samples_and_prediction(v, res, prediction)
 # рассчитываем ошибку предсказания
 error = calc_error(res, prediction)
 print('MSE is {:.3f}'.format(error))
+
